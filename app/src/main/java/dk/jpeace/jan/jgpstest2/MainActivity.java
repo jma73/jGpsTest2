@@ -1,8 +1,7 @@
 package dk.jpeace.jan.jgpstest2;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -14,6 +13,7 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Button;
 
@@ -24,17 +24,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private LocationManager locationManager;
     private TextView textView;
+    private TextView textView1;
     private TextView textView2;
+    private ScrollView scrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textView = (TextView) findViewById(R.id.textView);
+
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+        // textView1 = (TextView) findViewById(R.id.textView1);
         textView2 = (TextView) findViewById(R.id.textView2);
         Button buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
 buttonUpdate.setOnClickListener(this);
+
+
+        textView = new TextView(this);
+        textView.setText("JJJ");
+        textView.setTextColor(Color.GREEN);
+
+        scrollView.addView(textView);
+        //scrollView.addView(textView);
+        //scrollView.addView(textView2);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         ShowLocation();
@@ -49,9 +62,13 @@ buttonUpdate.setOnClickListener(this);
             LocationProvider lp = locationManager.getProvider(udbyder);
 
 //            }
+
+            locationManager.requestLocationUpdates(udbyder, 60000, 20, this);
+
             Location sted = locationManager.getLastKnownLocation(udbyder);
 
 
+            textView.setTextColor(Color.CYAN);
             textView.setText(udbyder + " - tændt: " + locationManager.isProviderEnabled(udbyder)
                     + "\n præcision=" + lp.getAccuracy() + " strømforbrug=" + lp.getPowerRequirement()
                     + "\n kræver satellit=" + lp.requiresSatellite() + " kræver net=" + lp.requiresNetwork()
@@ -74,7 +91,9 @@ buttonUpdate.setOnClickListener(this);
             }
             else
             {
+                textView.append("in ShowLocation()");
                 textView.append("NÆRMESTE ADRESSE: Kunne ikke findes..." + "\n\n");
+                GetAndShowLocationJakob();
             }
 
 
@@ -93,6 +112,11 @@ buttonUpdate.setOnClickListener(this);
     protected void onResume() {
         super.onResume();
 
+        textView.append("in onResume...");
+        GetAndShowLocationJakob();
+    }
+
+    private void GetAndShowLocationJakob() {
         Criteria kriterium = new Criteria();
         kriterium.setAccuracy(Criteria.ACCURACY_FINE);
         String udbyder = locationManager.getBestProvider(kriterium, true); // giver "gps" hvis den er slået til
@@ -132,11 +156,13 @@ buttonUpdate.setOnClickListener(this);
 
     // Metode specificeret i LocationListener
     public void onLocationChanged(Location sted) {
+        textView.append("in onLocationChanged:");
         // orig:
-        //textView.append(sted + "\n\n");
-        // scrollView.scrollTo(0, textView.getHeight()); // rul ned i bunden
+        textView.append(sted + "\n\n");
+        scrollView.scrollTo(0, textView.getHeight()); // rul ned i bunden
 
         // jans:
+        textView2.setTextColor(Color.MAGENTA);
         textView2.append(sted + "\n\n");
 
     }

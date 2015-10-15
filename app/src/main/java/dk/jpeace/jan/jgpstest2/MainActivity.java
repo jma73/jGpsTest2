@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         scrollViewBottom = (ScrollView) findViewById(R.id.scrollViewBottom);
         scrollViewTop = (ScrollView) findViewById(R.id.scrollViewTop);
-        // textView1 = (TextView) findViewById(R.id.textView1);
+        textViewAppend = (TextView) findViewById(R.id.textViewAppend);
+        textViewOnChanged = (TextView) findViewById(R.id.textViewOnChanged);
       //  textView2 = (TextView) findViewById(R.id.textView2);
 
         buttonUpdate = (Button) findViewById(R.id.buttonUpdate);
@@ -55,15 +56,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonShowLocations = (Button) findViewById(R.id.buttonShowLocations);
         buttonShowLocations.setOnClickListener(this);
 
-        textViewAppend = new TextView(this);
+        // textViewAppend = new TextView(this);
         textViewAppend.setText("JJJ");
         textViewAppend.setTextSize(8);
         textViewAppend.setTextColor(Color.GREEN);
-        scrollViewBottom.addView(textViewAppend);
+        // scrollViewBottom.setBackgroundColor(Color.rgb(200,222,200));
+        // scrollViewBottom.addView(textViewAppend);
 
-        textViewOnChanged= new TextView(this);
+        //textViewOnChanged= new TextView(this);
         textViewOnChanged.setTextColor(Color.MAGENTA);
-        scrollViewTop.addView(textViewOnChanged);
+        textViewOnChanged.setTextSize(9);
+        // scrollViewTop.addView(textViewOnChanged);
         scrollViewTop.setBackgroundColor(Color.LTGRAY);
         //scrollViewBottom.addView(textViewAppend);
         //scrollViewBottom.addView(textView2);
@@ -83,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             Location sted = locationManager.getLastKnownLocation(udbyder);
 
-            textView.setTextColor(Color.CYAN);
+            textView.setTextColor(Color.BLUE);
             String text = udbyder + " - tændt: " + locationManager.isProviderEnabled(udbyder)
                     + "\n præcision=" + lp.getAccuracy() + " strømforbrug=" + lp.getPowerRequirement()
                     + "\n kræver satellit=" + lp.requiresSatellite() + " kræver net=" + lp.requiresNetwork()

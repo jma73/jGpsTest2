@@ -82,11 +82,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (String udbyder : locationManager.getAllProviders()) {
             LocationProvider lp = locationManager.getProvider(udbyder);
 
-            locationManager.requestLocationUpdates(udbyder, 60000, 20, this);
+            // locationManager.requestLocationUpdates(udbyder, 60000, 20, this);
+            // Ændret til hvert 10. sekund eller 2 meter... For at få oftere ændringer.
+            locationManager.requestLocationUpdates(udbyder, 10000, 2, this);
 
             Location sted = locationManager.getLastKnownLocation(udbyder);
 
-            textView.setTextColor(Color.BLUE);
+            textView.setTextColor(Color.BLACK);
             String text = udbyder + " - tændt: " + locationManager.isProviderEnabled(udbyder)
                     + "\n præcision=" + lp.getAccuracy() + " strømforbrug=" + lp.getPowerRequirement()
                     + "\n kræver satellit=" + lp.requiresSatellite() + " kræver net=" + lp.requiresNetwork()
@@ -129,24 +131,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ShowLocation(textViewAppend, true);
         if(v==buttonShowLocations)
         {
-            textViewAppend.setText("All positions:\n");
-            textViewAppend.setTextColor(Color.BLUE);
-            final int size = locationArrayList.size();
-            for (int i = 0; i < size; i++)
-            {
-                Date date = new Date(locationArrayList.get(i).getTime());
-                DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
-                String dateFormatted = formatter.format(date);
-
-                textViewAppend.append("" + locationArrayList.get(i) + "\n");
-                textViewAppend.append("" + locationArrayList.get(i).getSpeed() + ", " + dateFormatted   + "\n");
-                textViewAppend.append("" + locationArrayList.get(i).getLatitude() + ", " + locationArrayList.get(i).getLatitude() + "\n");
-
-            }
+            ShowAllLocations();
         }
     }
 
+    /*
+      Her vil jeg lave en oversigt over alle opsamlede Locations.
 
+     */
+    private void ShowAllLocations() {
+        textViewAppend.setText("All positions:\n");
+        textViewAppend.setTextColor(Color.BLUE);
+        final int size = locationArrayList.size();
+        for (int i = 0; i < size; i++)
+        {
+            Date date = new Date(locationArrayList.get(i).getTime());
+            DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
+            String dateFormatted = formatter.format(date);
+
+            // textViewAppend.append("" + locationArrayList.get(i) + "\n");
+            textViewAppend.append("" + locationArrayList.get(i).getSpeed() + ", " + dateFormatted);
+            textViewAppend.append(" ::: " + TryGetLocationAddress(locationArrayList.get(i)));
+            textViewAppend.append("\n");
+            textViewAppend.append("" + locationArrayList.get(i).getLatitude() + ", " + locationArrayList.get(i).getLatitude() + "\n");
+            textViewAppend.append(" - - - - - - - - - - - ");
+            textViewAppend.append("\n");
+        }
+    }
 
 
     @Override
@@ -171,23 +182,65 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         //  Bed om opdateringer, der går mindst 60. sekunder og mindst 20. meter mellem hver
-        locationManager.requestLocationUpdates(udbyder, 60000, 20, this);
+        //locationManager.requestLocationUpdates(udbyder, 60000, 20, this);
+        locationManager.requestLocationUpdates(udbyder, 10000, 2, this);
 
         Location sted = locationManager.getLastKnownLocation(udbyder);
 
+        TryGetLocationAddressToTextView(textView, sted);
+    }
+
+    private void TryGetLocationAddressToTextView(TextView textView, Location sted) {
         if (sted != null) { // forsøg at finde nærmeste adresse
             try {
                 Geocoder geocoder = new Geocoder(this);
                 List<Address> adresser = geocoder.getFromLocation(sted.getLatitude(), sted.getLongitude(), 1);
-                if (adresser != null && adresser.size() > 0) {
-                    Address adresse = adresser.get(0);
-                    textView.append("NÆRMESTE ADRESSE:::: " + adresse + "\n\n");
-                }
+                String adresseTekst = getAdresseTekst(adresser);
+                textView.append(adresseTekst);
+
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
     }
+
+    private String getAdresseTekst(List<Address> adresser) {
+        String adresseTekst = "";
+        if (adresser != null && adresser.size() > 0) {
+            Address adresse = adresser.get(0);
+            adresseTekst = "::::NÆRMESTE ADRESSE:::: " + adresse + "\n\n";
+        }
+        return adresseTekst;
+    }
+
+
+    private String TryGetLocationAddress(Location sted) {
+        String adresseTekst = "";
+
+        if (sted != null) { // forsøg at finde nærmeste adresse
+            try {
+                Geocoder geocoder = new Geocoder(this);
+                List<Address> adresser = geocoder.getFromLocation(sted.getLatitude(), sted.getLongitude(), 1);
+                adresseTekst = getAdresseTekst(adresser);
+                return adresseTekst;
+                //textView.append(adresseTekst);
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return adresseTekst;
+    }
+
+    private String getFirstAdresse(List<Address> adresser) {
+        String adresseTekst = "";
+        if (adresser != null && adresser.size() > 0) {
+            Address adresse = adresser.get(0);
+            adresseTekst = adresse.toString();
+        }
+        return adresseTekst;
+    }
+
 
     @Override
     protected void onPause() {

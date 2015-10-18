@@ -1,5 +1,6 @@
 package dk.jpeace.jan.jgpstest2;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
@@ -13,11 +14,14 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Button;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -70,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         scrollViewTop.setBackgroundColor(Color.LTGRAY);
         //scrollViewBottom.addView(textViewAppend);
         //scrollViewBottom.addView(textView2);
+
+
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         ShowLocation(textViewAppend, true);
@@ -142,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void ShowAllLocations() {
         textViewAppend.setText("All positions:\n");
         textViewAppend.setTextColor(Color.BLUE);
+        //PrintLocation(locationArrayList);
         final int size = locationArrayList.size();
         for (int i = 0; i < size; i++)
         {
@@ -269,6 +276,56 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         locationArrayList.add(location);
     }
 
+
+    public void PrintLocations()
+    {
+        final int size = locationArrayList.size();
+        for (int i = 0; i < size; i++)
+        {
+            Date date = new Date(locationArrayList.get(i).getTime());
+            DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
+            String dateFormatted = formatter.format(date);
+
+            textViewAppend.append("" + locationArrayList.get(i) + "\n");
+            textViewAppend.append("\n");
+
+            textViewAppend.append("" + locationArrayList.get(i).getSpeed() + ", " + dateFormatted   + "\n");
+            String latlon = "" + locationArrayList.get(i).getLatitude() + ", " + locationArrayList.get(i).getLatitude() + "\n";
+            textViewAppend.append(latlon);
+            textViewAppend.append("\n");
+
+
+            String content = dateFormatted + ", " + latlon;
+            Log.d("JJ", content);
+            SaveFile(content);
+        }
+    }
+
+    public void SaveFile(String content)
+    {
+        String FILENAME = "hello_file";
+        //String string = "hello world!";
+
+        FileOutputStream fos = null;
+        try {
+            fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        try {
+            fos.write(content.getBytes());
+        } catch (IOException e) {
+                e.printStackTrace();
+        }
+        try {
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
 

@@ -67,7 +67,7 @@ android:gravity="bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textViewOnChanged"
-                android:text="testiasf  sdafsdf k kashf kasdfjk akfjadfjaldfjk  dahfljasdhfjaksfha  fkjh jsdafkjdfakjf askf dfka fjka dfjhajdkf j hfh sdj fjk g testiasf  sdafsdf k kashf kasdfjk akfjadfjaldfjk  dahfljasdhfjaksfha  fkjh jsdafkjdfakjf askf dfka fjka dfjhajdkf j hfh sdj fjk g testiasf  sdafsdf k kashf kasdfjk akfjadfjaldfjk  dahfljasdhfjaksfha  fkjh jsdafkjdfakjf askf dfka fjka dfjhajdkf j hfh sdj fjk g"
+                android:text="testiasf  sdafsdf k kashf kasdfjk dfjhajdkf j hfh sdj fjk g dfka fjka dfjhajdkf j hfh sdj fjk g"
                 />
 
 
@@ -85,7 +85,7 @@ android:gravity="bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textViewAppend"
-                android:text="qqqqqqqqqqqqq wwwwwwwwwwwwwwwwwww eeeeeeeeeeeeeeeeeeeee rrrrrrrrrrrrrrrrrrrrrrr tttttttttttttttttttttt yyyyyyyyyyyyyyyyyyyyy uuuuuuuuuuuuuuuuuuuuuu"
+                android:text="qqqqqqqqqqqqq wwwwwwwwwwwwwwwwwww uuuuuuuuuuuuuuuuuuuuuu"
                 />
 
         </ScrollView>

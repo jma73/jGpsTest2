@@ -13,7 +13,6 @@ import android.location.LocationProvider;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ScrollView;
@@ -164,6 +163,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             textViewAppend.append(" - - - - - - - - - - - ");
             textViewAppend.append("\n");
         }
+
+        String allLocations = GetAllLocations();
+        SaveToFile(allLocations);
+
+        textViewAppend.append(getFilesDir().getPath());
+        SendEmailIntent(allLocations);
     }
 
 
@@ -194,22 +199,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Location sted = locationManager.getLastKnownLocation(udbyder);
 
-        TryGetLocationAddressToTextView(textView, sted);
+        String address = TryGetLocationAddress(sted);
+        textView.append(address);
     }
 
-    private void TryGetLocationAddressToTextView(TextView textView, Location sted) {
+    /*
+    private String TryGetLocationAddressToTextView(Location sted) {
         if (sted != null) { // forsøg at finde nærmeste adresse
             try {
                 Geocoder geocoder = new Geocoder(this);
                 List<Address> adresser = geocoder.getFromLocation(sted.getLatitude(), sted.getLongitude(), 1);
                 String adresseTekst = getAdresseTekst(adresser);
-                textView.append(adresseTekst);
+                return adresseTekst;
 
             } catch (IOException ex) {
+
                 ex.printStackTrace();
             }
         }
+        return "Location N/A.";
     }
+    */
 
     private String getAdresseTekst(List<Address> adresser) {
         String adresseTekst = "";
@@ -222,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private String TryGetLocationAddress(Location sted) {
-        String adresseTekst = "";
+        String adresseTekst = "Location N/A.";
 
         if (sted != null) { // forsøg at finde nærmeste adresse
             try {
@@ -253,21 +263,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         locationManager.removeUpdates(this);
+
+        String allLocations = GetAllLocations();
+        SaveToFile(allLocations);
     }
 
     // Metode specificeret i LocationListener
-    public void onLocationChanged(Location sted) {
+    public void onLocationChanged(Location location) {
 
-        saveKoordinates(sted);
+        saveKoordinates(location);
 
         textViewAppend.append("in onLocationChanged:");
         // orig:
-        textViewAppend.append(sted + "\n");
+        textViewAppend.append(location + "\n");
         scrollViewBottom.scrollTo(0, textViewAppend.getHeight()); // rul ned i bunden
 
         // jans:
         textViewOnChanged.setTextColor(Color.MAGENTA);
-        textViewOnChanged.setText(sted + "\n");
+        textViewOnChanged.setText(location + "\n");
 
     }
 
@@ -297,32 +310,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             String content = dateFormatted + ", " + latlon;
             Log.d("JJ", content);
-            SaveFile(content);
+            // SaveToFile(content);
         }
     }
 
-    public void SaveFile(String content)
+    public String GetAllLocations()
     {
-        String FILENAME = "hello_file";
+        String content = "Gps locations - Test from jGPS";
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
+
+        final int size = locationArrayList.size();
+        for (int i = 0; i < size; i++)
+        {
+            Date date = new Date(locationArrayList.get(i).getTime());
+            String locationDate = dateFormat.format(date);
+            String latlonKoordinates = "" + locationArrayList.get(i).getLatitude() + ", " + locationArrayList.get(i).getLatitude();
+
+            content += locationDate + ", " + latlonKoordinates;
+            content += "\n";
+            Log.d("JJJ", content);
+            // SaveToFile(content);
+        }
+        return content;
+    }
+
+
+    public void SaveToFile(String content)
+    {
+        //
+        // Se evt.
+        //  D:\jan\SourceGit\Android\android-eksempler\AndroidElementer\app\src\main\java\dk\nordfalk\aktivitetsliste\Aktivitetsdata.java
+        //      final File cachefil = new File(app.getCacheDir(), "Aktivitetslistecache.ser");
+        //          objektstrøm = new ObjectInputStream(new FileInputStream(cachefil));
+        // .
+
+
+        String FILENAME = "hello_file.txt";
         //String string = "hello world!";
 
         FileOutputStream fos = null;
         try {
             fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
         }
-        catch (FileNotFoundException e)
+        catch (FileNotFoundException exception)
         {
-            e.printStackTrace();
+            Log.d("jj", "SaveFile Failed on openFileOutput... " + exception.getMessage() + "<n getStackTrace::" + exception.getStackTrace());
+            exception.printStackTrace();
         }
         try {
             fos.write(content.getBytes());
-        } catch (IOException e) {
-                e.printStackTrace();
+        } catch (IOException exception) {
+                Log.d("jj", "SaveFile Failed on write... " + exception.getMessage() + "<n getStackTrace::" + exception.getStackTrace());
+                exception.printStackTrace();
         }
         try {
             fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
 
     }
@@ -381,4 +425,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onProviderDisabled(String provider) {
 
     }
+
+
+    public void SendEmailIntent(String content)
+    {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/html");
+        intent.putExtra(Intent.EXTRA_EMAIL, "jma73@hotmail.com");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Subject Jan");
+        intent.putExtra(Intent.EXTRA_TEXT, "I'm email body. Jan.");
+
+        startActivity(Intent.createChooser(intent, "Send Email"));
+
+    }
+
+
 }

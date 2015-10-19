@@ -22,3 +22,9 @@ geo fix 12.671306 55.592976
 Funkiavej 40
 2300 København S
 geo fix 12.606898 55.648086
+
+
+
+Links:
+http://stackoverflow.com/questions/2279647/how-to-emulate-gps-location-in-the-android-emulator
+http://developer.android.com/tools/debugging/ddms.html#ops-location

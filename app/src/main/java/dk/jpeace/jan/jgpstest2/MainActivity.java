@@ -31,7 +31,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, LocationListener {
 
     private LocationManager locationManager;
-    Button buttonUpdate, buttonShowLocations;
+    Button buttonUpdate, buttonShowLocations, buttonSend;
 
     private TextView textViewAppend;
     private TextView textView1;
@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonUpdate.setOnClickListener(this);
         buttonShowLocations = (Button) findViewById(R.id.buttonShowLocations);
         buttonShowLocations.setOnClickListener(this);
+        buttonSend = (Button) findViewById(R.id.buttonSend);
+        buttonSend.setOnClickListener(this);
 
         // textViewAppend = new TextView(this);
         textViewAppend.setText("JJJ");
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             // locationManager.requestLocationUpdates(udbyder, 60000, 20, this);
             // Ændret til hvert 10. sekund eller 2 meter... For at få oftere ændringer.
-            locationManager.requestLocationUpdates(udbyder, 10000, 2, this);
+            locationManager.requestLocationUpdates(udbyder, 2000, 1, this);
 
             Location sted = locationManager.getLastKnownLocation(udbyder);
 
@@ -138,6 +140,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             ShowAllLocations();
         }
+        if(v==buttonSend)
+        {
+            SendAllLocations();
+        }
+    }
+
+    private void SendAllLocations() {
+        String allLocations = GetAllLocations();
+        SaveToFile(allLocations);
+
+        textViewAppend.append(getFilesDir().getPath());
+        SendEmailIntent(allLocations);
     }
 
     /*
@@ -163,12 +177,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             textViewAppend.append(" - - - - - - - - - - - ");
             textViewAppend.append("\n");
         }
-
-        String allLocations = GetAllLocations();
-        SaveToFile(allLocations);
-
-        textViewAppend.append(getFilesDir().getPath());
-        SendEmailIntent(allLocations);
     }
 
 
@@ -195,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //  Bed om opdateringer, der går mindst 60. sekunder og mindst 20. meter mellem hver
         //locationManager.requestLocationUpdates(udbyder, 60000, 20, this);
-        locationManager.requestLocationUpdates(udbyder, 10000, 2, this);
+        locationManager.requestLocationUpdates(udbyder, 2000, 1, this);
 
         Location sted = locationManager.getLastKnownLocation(udbyder);
 
@@ -432,7 +440,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.setType("text/html");
         intent.putExtra(Intent.EXTRA_EMAIL, "jma73@hotmail.com");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Subject Jan");
-        intent.putExtra(Intent.EXTRA_TEXT, "I'm email body. Jan.");
+        intent.putExtra(Intent.EXTRA_TEXT, "I'm email body. Jan.\n\n\nGPS data\n\n\n" + content );
+        //intent.putExtra(Intent.ACTION_ATTACH_DATA, "I'm email body. Jan." + content );
 
         startActivity(Intent.createChooser(intent, "Send Email"));
 

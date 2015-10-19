@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public String GetAllLocations()
     {
-        String content = "Gps locations - Test from jGPS";
+        String content = "Gps locations - Test from jGPS \n";
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
 
         final int size = locationArrayList.size();
@@ -329,7 +329,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             content += locationDate + ", " + latlonKoordinates;
             content += "\n";
             Log.d("JJJ", content);
-            // SaveToFile(content);
         }
         return content;
     }
